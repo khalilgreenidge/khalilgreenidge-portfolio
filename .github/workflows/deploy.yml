@@ -18,3 +18,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Must match the local wrangler. The action's default is a v3 release
+          # that rejects this config: assets-only Workers (no `main`) and
+          # wrangler.jsonc both need wrangler >= 4.
+          wranglerVersion: "4.135.0"
