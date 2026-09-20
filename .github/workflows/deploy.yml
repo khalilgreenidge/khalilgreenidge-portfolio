@@ -14,6 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Fail with a readable message instead of wrangler's generic
+      # "necessary to set a CLOUDFLARE_API_TOKEN" when a secret is empty.
+      - name: Check credentials are present
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          fail=0
+          [ -n "$TOKEN" ]   || { echo "::error::secret CLOUDFLARE_API_TOKEN is empty or unset"; fail=1; }
+          [ -n "$ACCOUNT" ] || { echo "::error::secret CLOUDFLARE_ACCOUNT_ID is empty or unset"; fail=1; }
+          [ "$fail" = 0 ] && echo "both secrets present (token length ${#TOKEN})"
+          exit $fail
+
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
