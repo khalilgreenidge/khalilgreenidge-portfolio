@@ -3,5 +3,13 @@
   "compatibility_date": "2026-09-20",
   "assets": {
     "directory": "./dist"
-  }
+  },
+  // Custom domains. Wrangler creates the proxied DNS records automatically
+  // on deploy, since the zone is already on this Cloudflare account.
+  // www is attached so Cloudflare terminates the request; the Single Redirect
+  // rule (see scripts/setup-www-redirect.sh) sends it to the apex.
+  "routes": [
+    { "pattern": "khalilgreenidge.com", "custom_domain": true },
+    { "pattern": "www.khalilgreenidge.com", "custom_domain": true }
+  ]
 }

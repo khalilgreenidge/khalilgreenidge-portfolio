@@ -1,46 +1,57 @@
 # khalilgreenidge-portfolio
 
-A plain, portable static site (`dist/index.html`, no framework, no build step) ready to deploy on Cloudflare Workers with static assets, which is Cloudflare's current recommended path for new static sites (Pages still works but isn't where new features land).
+Plain static site (`dist/index.html`, no framework, no build step) served by
+Cloudflare Workers static assets at **https://khalilgreenidge.com**.
 
-## 1. Push to GitHub
+- `dist/index.html` — the whole site. Edit, commit, push.
+- `wrangler.jsonc` — Worker + custom domain config.
+- `.github/workflows/deploy.yml` — deploys on every push to `main`.
+- `scripts/setup-www-redirect.sh` — one-time: 301s `www` to the apex.
 
-From this folder:
+## Editing
 
-```bash
-git init
-git add .
-git commit -m "Initial portfolio site"
-gh repo create khalilgreenidge-portfolio --public --source=. --remote=origin --push
-```
+Everything (copy, colors, sections) is plain HTML/CSS/JS in `dist/index.html`.
+No templating, no build step: edit the file, commit, push. GitHub Actions
+redeploys in well under a minute.
 
-(No `gh` CLI? Create an empty repo named `khalilgreenidge-portfolio` on github.com first, then:)
-
-```bash
-git remote add origin https://github.com/khalilgreenidge/khalilgreenidge-portfolio.git
-git branch -M main
-git push -u origin main
-```
-
-## 2. Deploy once, right now (optional sanity check)
+## Deploying by hand
 
 ```bash
 npx wrangler deploy
 ```
 
-This publishes it to `khalilgreenidge-portfolio.<your-subdomain>.workers.dev` immediately, no GitHub needed for this step.
+## One-time setup
 
-## 3. Connect GitHub for auto-deploy on every push
+Already done once; recorded here so it can be rebuilt from scratch.
 
-1. Go to the Cloudflare dashboard → **Workers & Pages** → **Create application** → **Import a repository**.
-2. Pick `khalilgreenidge-portfolio` from your GitHub account.
-3. Leave the build settings as detected (no build command needed, it's already static) and select **Save and Deploy**.
+**1. Authenticate wrangler locally**
 
-Every future `git push` to `main` now redeploys automatically.
+```bash
+npx wrangler login
+```
 
-## 4. Point khalilgreenidge.com at it
+**2. First deploy** — creates the Worker and both custom domains, and adds the
+proxied DNS records for `khalilgreenidge.com` and `www` automatically.
 
-In the Worker's settings → **Domains & Routes** → **Add** → **Custom Domain** → enter `khalilgreenidge.com` (and `www.khalilgreenidge.com` if you want both). Since the domain is already on your Cloudflare account, the DNS record is added for you automatically.
+```bash
+npx wrangler deploy
+```
 
-## Editing later
+**3. www to apex redirect**
 
-Everything, copy, colors, sections, is plain HTML/CSS/JS in `dist/index.html`. No templating, no build step: edit the file, commit, push, done.
+```bash
+CLOUDFLARE_API_TOKEN=... ./scripts/setup-www-redirect.sh
+```
+
+**4. CI credentials** — create an API token at
+[dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)
+using the **Edit Cloudflare Workers** template, scoped to this account and the
+`khalilgreenidge.com` zone. Then:
+
+```bash
+gh secret set CLOUDFLARE_API_TOKEN
+gh secret set CLOUDFLARE_ACCOUNT_ID
+```
+
+Account ID is on the Workers & Pages overview page in the dashboard, or from
+`npx wrangler whoami`.
