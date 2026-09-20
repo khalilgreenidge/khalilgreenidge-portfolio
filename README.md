@@ -46,7 +46,8 @@ CLOUDFLARE_API_TOKEN=... ./scripts/setup-www-redirect.sh
 **4. CI credentials** — create an API token at
 [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens)
 using the **Edit Cloudflare Workers** template, scoped to this account and the
-`khalilgreenidge.com` zone. Then:
+`khalilgreenidge.com` zone. To also run `setup-www-redirect.sh`, add
+**Zone -> Single Redirect -> Edit** (not Config Rules). Then:
 
 ```bash
 gh secret set CLOUDFLARE_API_TOKEN

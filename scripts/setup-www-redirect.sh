@@ -3,7 +3,9 @@
 # to the apex (301, path and query preserved). Idempotent: re-running replaces
 # the rule this script manages and leaves any other redirect rules alone.
 #
-# Needs a token with Zone -> Config Rules: Edit (or Zone: Edit) on the zone.
+# Needs a token with Zone -> Single Redirect: Edit on the zone.
+# (Config Rules: Edit is NOT sufficient - it does not grant the
+#  http_request_dynamic_redirect phase that Single Redirects live in.)
 #   CLOUDFLARE_API_TOKEN=... ./scripts/setup-www-redirect.sh
 set -euo pipefail
 
